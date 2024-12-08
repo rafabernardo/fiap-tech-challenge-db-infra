@@ -60,7 +60,7 @@ jobs:
           echo "db_password = \"${DB_PASSWORD}\"" >> terraform.tfvars
           echo "db_name = \"${DB_NAME}\"" >> terraform.tfvars
           echo "project_name = \"${PROJECT_NAME}\"" >> terraform.tfvars
-          TF_LOG=debug terraform plan -no-color -out=tfplan -var-file=terraform.tfvars
+          TF_LOG=INFO terraform plan -no-color -out=tfplan -var-file=terraform.tfvars
 
   terraform-rds-apply:
     name: "RDS Infrastructure Deploy"
@@ -89,7 +89,7 @@ jobs:
 
       - name: Terraform Apply
         run: |
-          terraform apply -auto-approve -input=false
+          TF_LOG=INFO terraform apply -auto-approve -input=false
 
       - name: Save RDS Outputs
         run: |
