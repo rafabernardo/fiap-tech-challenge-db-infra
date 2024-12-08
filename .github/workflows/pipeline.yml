@@ -82,7 +82,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -106,12 +106,6 @@ jobs:
           echo "project_name = \"${PROJECT_NAME}\"" >> terraform.tfvars
           TF_LOG=INFO terraform plan -no-color -out=tfplan -var-file=terraform.tfvars
 
-      - name: Save RDS Outputs
+      - name: Terraform Execution
         run: |
-          terraform output -json > rds_outputs.json
-
-      - name: Upload RDS Outputs
-        uses: actions/upload-artifact@v4
-        with:
-          name: rds-outputs
-          path: ./infrastructure/rds_outputs.json
+          terraform apply -auto-approve
