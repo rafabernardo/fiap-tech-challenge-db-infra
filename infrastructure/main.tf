@@ -1,3 +1,15 @@
+resource "aws_db_subnet_group" "postgresql_subnet_group" {
+  name       = "${var.project_name}-rds-subnet-group"
+  subnet_ids = module.vpc.private_subnets
+
+  tags = {
+    Name        = "${var.project_name}-rds-subnet-group"
+    Environment = var.environment
+  }
+}
+
+
+
 module "db" {
   source  = "terraform-aws-modules/rds/aws"
   version = "~> 6.0"
