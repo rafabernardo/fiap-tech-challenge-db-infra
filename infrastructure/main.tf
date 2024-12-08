@@ -1,15 +1,3 @@
-resource "aws_db_subnet_group" "postgresql_subnet_group" {
-  name       = "${var.project_name}-rds-subnet-group"
-  subnet_ids = module.vpc.private_subnets
-
-  tags = {
-    Name        = "${var.project_name}-rds-subnet-group"
-    Environment = var.environment
-  }
-}
-
-
-
 module "db" {
   source         = "terraform-aws-modules/rds/aws"
   version        = "~> 6.0"
@@ -32,9 +20,6 @@ module "db" {
   password = var.db_password
   port     = 5432
 
-  # Network configuration
-  vpc_security_group_ids = [module.rds_sg.security_group_id]
-  db_subnet_group_name   = aws_db_subnet_group.postgresql_subnet_group.name
 
   # Backup and maintenance windows
   maintenance_window      = "Mon:00:00-Mon:03:00"
