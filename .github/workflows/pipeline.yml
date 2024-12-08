@@ -62,30 +62,6 @@ jobs:
           echo "project_name = \"${PROJECT_NAME}\"" >> terraform.tfvars
           TF_LOG=debug terraform plan -no-color -out=tfplan -var-file=terraform.tfvars
 
-      - name: Update PR with Terraform Plan
-        uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `#### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-
-            <details><summary>Show Plan</summary>
-
-            \`\`\`terraform
-            ${process.env.PLAN}
-            \`\`\`
-
-            </details>`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
-
   terraform-rds-apply:
     name: "RDS Infrastructure Deploy"
     needs: terraform-rds-plan
@@ -123,4 +99,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rds-outputs
-          path: ./infrastructure/rds/rds_outputs.json
+          path: ./infrastructure/rds_outputs.json
