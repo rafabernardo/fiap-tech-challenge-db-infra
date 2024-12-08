@@ -13,7 +13,7 @@ module "rds_sg" {
       to_port     = 5432
       protocol    = "tcp"
       description = "PostgreSQL access from within VPC"
-      cidr_blocks = [var.vpc_cidr]
+      cidr_blocks = var.vpc_cidr
     }
   ]
 
