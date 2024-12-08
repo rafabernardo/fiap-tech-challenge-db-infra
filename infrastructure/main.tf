@@ -11,8 +11,9 @@ resource "aws_db_subnet_group" "postgresql_subnet_group" {
 
 
 module "db" {
-  source  = "terraform-aws-modules/rds/aws"
-  version = "~> 6.0"
+  source         = "terraform-aws-modules/rds/aws"
+  version        = "~> 6.0"
+  instance_class = "db.t4g.micro"
 
   identifier = "${var.project_name}-postgresql"
 
