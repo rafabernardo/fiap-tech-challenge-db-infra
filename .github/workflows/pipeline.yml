@@ -84,9 +84,19 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      - name: Terraform Apply
+      - name: Terraform Plan
+        id: plan
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
         run: |
-          TF_LOG=INFO terraform apply -auto-approve -input=false
+          echo "db_username = \"${DB_USERNAME}\"" > terraform.tfvars
+          echo "db_password = \"${DB_PASSWORD}\"" >> terraform.tfvars
+          echo "db_name = \"${DB_NAME}\"" >> terraform.tfvars
+          echo "project_name = \"${PROJECT_NAME}\"" >> terraform.tfvars
+          TF_LOG=INFO terraform plan -no-color -out=tfplan -var-file=terraform.tfvars
 
       - name: Save RDS Outputs
         run: |
