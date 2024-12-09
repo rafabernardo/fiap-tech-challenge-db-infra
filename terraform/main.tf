@@ -1,9 +1,11 @@
+
+
 module "db" {
   source         = "terraform-aws-modules/rds/aws"
   version        = "~> 6.0"
   instance_class = "db.t4g.micro"
 
-  identifier = "${var.project_name}-postgresql"
+  identifier = var.project_name
 
   # Database engine configuration
   engine               = "postgres"
@@ -39,4 +41,9 @@ module "db" {
   }
 }
 
-
+terraform {
+  backend "s3" {
+    region = var.region
+    key    = "terraform.tfstate"
+  }
+}
