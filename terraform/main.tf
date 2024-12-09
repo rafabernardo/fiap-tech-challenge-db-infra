@@ -1,7 +1,7 @@
 resource "aws_db_instance" "rds_postgresql" {
   identifier              = "rds-lanchonete-tf"
   allocated_storage       = 20
-  max_allocated_storage   = 100
+  max_allocated_storage   = 25
   engine                  = "postgres"
   engine_version          = "16.3"
   instance_class          = "db.t4g.micro"
