@@ -1,3 +1,7 @@
+## Description
+
+This repository contains a Terraform configuration for deploying an AWS RDS PostgreSQL instance. It serves as a component of a technical assessment for the postgraduate Software Architecture project.
+
 ## Prerequisites
 
 - [Terraform](https://www.terraform.io/downloads.html) >= 0.13
