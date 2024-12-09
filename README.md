@@ -4,7 +4,7 @@ This repository contains a Terraform configuration for deploying an AWS RDS Post
 
 ## Prerequisites
 
-- [Terraform](https://www.terraform.io/downloads.html) >= 0.13
+- [Terraform](https://www.terraform.io/downloads.html) >= 1.10.0
 - AWS account with appropriate permissions
 - GitHub repository secrets configured for AWS credentials and other sensitive data
 
@@ -60,7 +60,7 @@ This repository uses GitHub Actions to automate Terraform workflows. The pipelin
 
 ### How to create S3 bucket for Terraform state
 
-Check this repository [terraform-s3-backend]() for creating an S3 bucket for storing Terraform state.
+Check this repository [s3-backend-state](https://github.com/rafabernardo/fiap-tech-challenge-s3-backend-state) for creating an S3 bucket (steps) for storing Terraform state.
 
 ### Workflow Steps
 
