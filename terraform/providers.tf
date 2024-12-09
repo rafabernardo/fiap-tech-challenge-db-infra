@@ -6,8 +6,8 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "tech-lanches-terraform"
-    key    = "tech-lanches-terraform-db/terraform.tfstate"
+    bucket = "fiap-tech-challenge-terraform"
+    key    = "fiap-tech-challenge-terraform-db/terraform.tfstate"
     region = "us-east-1"
   }
 }

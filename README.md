@@ -50,6 +50,18 @@ This repository contains a Terraform configuration for deploying an AWS RDS Post
 
 This repository uses GitHub Actions to automate Terraform workflows. The pipeline is defined in [`.github/workflows/pipeline.yml`](.github/workflows/pipeline.yml).
 
+### GitHub Secrets
+
+- `AWS_ACCESS_KEY_ID`: AWS access key ID
+- `AWS_SECRET_ACCESS_KEY`: AWS secret access key
+- `AWS_REGION`: AWS region
+- `AWS_SESSION_TOKEN`: AWS session token (mandatory for AWS Academy accounts)
+- `BUCKET_TF_STATE`: S3 bucket for storing Terraform state
+
+### How to create S3 bucket for Terraform state
+
+Check this repository [terraform-s3-backend]() for creating an S3 bucket for storing Terraform state.
+
 ### Workflow Steps
 
 - **Checkout code**
