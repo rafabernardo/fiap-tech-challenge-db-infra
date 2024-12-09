@@ -4,75 +4,31 @@ on:
   push:
     branches:
       - main
+    paths:
+      - terraform/**
   pull_request:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      deploy_rds:
-        description: "Deploy RDS"
-        required: true
-        default: "true"
+    paths:
+      - terraform/**
 
 # Define environment variables
 env:
+  TF_LOG: INFO
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
-
-# Permissions for the workflow
-permissions:
-  contents: read
-  pull-requests: write
+  BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE}}
 
 jobs:
-  terraform-rds-plan:
+  terraform:
     name: "RDS Infrastructure Plan"
     runs-on: ubuntu-latest
-
     defaults:
       run:
-        working-directory: ./infrastructure
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Validate
-        run: terraform validate
-
-      - name: Terraform Plan
-        id: plan
-        env:
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
-        run: |
-          echo "db_username = \"${DB_USERNAME}\"" > terraform.tfvars
-          echo "db_password = \"${DB_PASSWORD}\"" >> terraform.tfvars
-          echo "db_name = \"${DB_NAME}\"" >> terraform.tfvars
-          echo "project_name = \"${PROJECT_NAME}\"" >> terraform.tfvars
-          TF_LOG=INFO terraform plan -no-color -out=tfplan -var-file=terraform.tfvars
-
-  terraform-rds-apply:
-    name: "RDS Infrastructure Deploy"
-    needs: terraform-rds-plan
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./infrastructure
-
-    if: >
-      (github.ref == 'refs/heads/main' && github.event_name == 'push') || 
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_rds == 'true')
+        shell: bash
+        working-directory: ./terraform
 
     steps:
       - name: Checkout code
@@ -90,22 +46,58 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
 
       - name: Terraform Init
-        run: terraform init
+        id: init
+        run: terraform init -backend-config="bucket=${BUCKET_TF_STATE}"
+
+      - name: Terraform Validate
+        run: terraform validate
 
       - name: Terraform Plan
         id: plan
+        if: github.event_name == 'pull_request'
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_NAME }}
-          PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
         run: |
           echo "db_username = \"${DB_USERNAME}\"" > terraform.tfvars
           echo "db_password = \"${DB_PASSWORD}\"" >> terraform.tfvars
           echo "db_name = \"${DB_NAME}\"" >> terraform.tfvars
-          echo "project_name = \"${PROJECT_NAME}\"" >> terraform.tfvars
-          TF_LOG=INFO terraform plan -no-color -out=tfplan -var-file=terraform.tfvars
+          terraform plan -no-color -out=tfplan -var-file=terraform.tfvars -input=false
+        continue-on-error: true
 
-      - name: Terraform Execution
-        run: |
-          terraform apply -auto-approve
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: ${{ steps.plan.outputs.stdout }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve -input=false
