@@ -59,12 +59,10 @@ jobs:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_NAME }}
-          PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
         run: |
           echo "db_username = \"${DB_USERNAME}\"" > terraform.tfvars
           echo "db_password = \"${DB_PASSWORD}\"" >> terraform.tfvars
           echo "db_name = \"${DB_NAME}\"" >> terraform.tfvars
-          echo "project_name = \"${PROJECT_NAME}\"" >> terraform.tfvars
           terraform plan -no-color -out=tfplan -var-file=terraform.tfvars -input=false
         continue-on-error: true
 
