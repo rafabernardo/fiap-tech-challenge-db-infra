@@ -1,5 +1,5 @@
 resource "aws_db_instance" "rds_postgresql" {
-  identifier              = "rds-lanchonete-tf"
+  identifier              = "rds-postgresql"
   allocated_storage       = 20
   max_allocated_storage   = 25
   engine                  = "postgres"
@@ -12,6 +12,7 @@ resource "aws_db_instance" "rds_postgresql" {
   publicly_accessible     = true
   backup_retention_period = 7
   db_name                 = var.db_name
+
 
   tags = {
     Name        = "fiap-tech-challenge-db-infra"
@@ -28,3 +29,14 @@ resource "aws_db_instance" "rds_postgresql" {
 
 }
 
+output "security_group_id" {
+  value = tolist(aws_db_instance.rds_postgresql.vpc_security_group_ids)[0]
+}
+
+output "name" {
+  value = aws_db_instance.rds_postgresql.db_name
+}
+
+output "endpoint" {
+  value = aws_db_instance.rds_postgresql.endpoint
+}
