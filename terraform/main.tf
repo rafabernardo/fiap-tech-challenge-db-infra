@@ -1,5 +1,5 @@
 resource "aws_db_instance" "rds_postgresql" {
-  identifier              = "rds_postgresql"
+  identifier              = "rds-postgresql"
   allocated_storage       = 20
   max_allocated_storage   = 25
   engine                  = "postgres"
@@ -33,3 +33,10 @@ output "security_group_id" {
   value = tolist(aws_db_instance.rds_postgresql.vpc_security_group_ids)[0]
 }
 
+output "name" {
+  value = aws_db_instance.rds_postgresql.db_name
+}
+
+output "endpoint" {
+  value = aws_db_instance.rds_postgresql.endpoint
+}
