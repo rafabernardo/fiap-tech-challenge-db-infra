@@ -35,7 +35,6 @@ resource "aws_db_instance" "rds_postgresql" {
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "rds-subnet-group"
   subnet_ids = data.aws_subnets.subnets.ids
-  vpc_id     = data.aws_vpc.vpc.id
 
   tags = {
     Name = "rds-subnet-group"
