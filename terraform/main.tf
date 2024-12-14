@@ -4,7 +4,7 @@ resource "aws_db_instance" "rds_postgresql" {
   max_allocated_storage   = 25
   engine                  = "postgres"
   engine_version          = "16.3"
-  instance_class          = "db.t4g.micro"
+  instance_class          = "db.t3.micro"
   username                = var.db_username
   password                = var.db_password
   parameter_group_name    = "default.postgres16"
@@ -12,6 +12,8 @@ resource "aws_db_instance" "rds_postgresql" {
   publicly_accessible     = true
   backup_retention_period = 7
   db_name                 = var.db_name
+  vpc_security_group_ids  = [data.aws_security_group.security_group.id]
+  db_subnet_group_name    = aws_db_subnet_group.rds_subnet_group.name
 
 
   tags = {
@@ -29,14 +31,12 @@ resource "aws_db_instance" "rds_postgresql" {
 
 }
 
-output "security_group_id" {
-  value = tolist(aws_db_instance.rds_postgresql.vpc_security_group_ids)[0]
-}
 
-output "name" {
-  value = aws_db_instance.rds_postgresql.db_name
-}
+resource "aws_db_subnet_group" "rds_subnet_group" {
+  name       = "rds-subnet-group"
+  subnet_ids = data.aws_subnets.subnets.ids
 
-output "endpoint" {
-  value = aws_db_instance.rds_postgresql.endpoint
+  tags = {
+    Name = "rds-subnet-group"
+  }
 }
