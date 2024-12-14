@@ -13,7 +13,6 @@ resource "aws_db_instance" "rds_postgresql" {
   backup_retention_period = 7
   db_name                 = var.db_name
   vpc_security_group_ids  = [data.aws_security_group.security_group.id]
-  db_subnet_group_name    = aws_db_subnet_group.rds_subnet_group.name
 
 
   tags = {
@@ -29,14 +28,4 @@ resource "aws_db_instance" "rds_postgresql" {
     delete = "15m"
   }
 
-}
-
-
-resource "aws_db_subnet_group" "rds_subnet_group" {
-  name       = "rds-subnet-group"
-  subnet_ids = data.aws_subnets.subnets.ids
-
-  tags = {
-    Name = "rds-subnet-group"
-  }
 }
