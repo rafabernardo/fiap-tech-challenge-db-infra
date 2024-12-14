@@ -29,3 +29,12 @@ resource "aws_db_instance" "rds_postgresql" {
   }
 
 }
+
+resource "aws_db_subnet_group" "rds_subnet_group" {
+  name       = "${var.projectName}-rds-subnet-group"
+  subnet_ids = [for subnet in data.aws_subnet.subnet : subnet.id if subnet.availability_zone != "${var.regionDefault}e"]
+
+  tags = {
+    Name = "${var.projectName}-rds-subnet-group"
+  }
+}
