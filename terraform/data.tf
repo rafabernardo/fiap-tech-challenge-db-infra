@@ -1,5 +1,5 @@
-data "aws_iam_role" "name" {
-  name = "LabRole"
+data "aws_security_group" "security_group" {
+  name = "${var.projectName}-rds-sg"
 }
 
 data "aws_vpc" "vpc" {
