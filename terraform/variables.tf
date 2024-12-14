@@ -27,3 +27,7 @@ variable "vpcCidr" {
 variable "projectName" {
   default = "fiap-tech-challenge"
 }
+
+variable "regionDefault" {
+  default = "us-east-1"
+}
