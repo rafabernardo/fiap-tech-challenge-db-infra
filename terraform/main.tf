@@ -5,8 +5,8 @@ resource "aws_db_instance" "rds_postgresql" {
   engine                  = "postgres"
   engine_version          = "16.3"
   instance_class          = "db.t3.micro"
-  username                = jsondecode(aws_secretsmanager_secret_version.example.secret_string)["db-username"]
-  password                = jsondecode(aws_secretsmanager_secret_version.example.secret_string)["db-password"]
+  username                = jsondecode(aws_secretsmanager_secret_version.db-secret-version.secret_string)["db-username"]
+  password                = jsondecode(aws_secretsmanager_secret_version.db-secret-version.secret_string)["db-password"]
   parameter_group_name    = "default.postgres16"
   skip_final_snapshot     = true
   publicly_accessible     = true
