@@ -34,9 +34,8 @@ resource "aws_db_instance" "rds_postgresql" {
 
 
 resource "random_password" "example" {
-  length           = 16
-  special          = true
-  override_special = "_%!"
+  length  = 16
+  special = false
 }
 resource "aws_secretsmanager_secret" "example" {
   name = "database-secrets-2"
