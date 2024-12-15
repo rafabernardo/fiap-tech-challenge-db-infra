@@ -18,4 +18,3 @@ Este repositório utiliza GitHub Actions para automatizar a execução do Terraf
 - `AWS_SECRET_ACCESS_KEY`: AWS secret access key
 - `AWS_REGION`: AWS region
 - `AWS_SESSION_TOKEN`: AWS session token (mandatory for AWS Academy accounts)
-- `DB_NAME`: Nome do banco de dados
