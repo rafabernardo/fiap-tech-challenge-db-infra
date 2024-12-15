@@ -37,11 +37,15 @@ resource "random_password" "example" {
   length  = 16
   special = false
 }
-resource "aws_secretsmanager_secret" "example" {
-  name = "database-secrets-2"
+
+resource "random_uuid" "uui" {
 }
-resource "aws_secretsmanager_secret_version" "example" {
-  secret_id = aws_secretsmanager_secret.example.id
+resource "aws_secretsmanager_secret" "db-secret" {
+  name        = "fiap-tech-challenge-db-secret-${random_uuid.uui.result}"
+  description = "Secret for the RDS instance"
+}
+resource "aws_secretsmanager_secret_version" "db-secret-version" {
+  secret_id = aws_secretsmanager_secret.db-secret.id
   secret_string = jsonencode({
     db-username = var.db_username
     db-password = random_password.example.result
@@ -54,5 +58,9 @@ output "db-name" {
 
 output "url" {
   value = aws_db_instance.rds_postgresql.endpoint
+}
+
+output "secret-name" {
+  value = aws_secretsmanager_secret.db-secret.name
 }
 
