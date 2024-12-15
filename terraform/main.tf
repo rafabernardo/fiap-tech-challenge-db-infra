@@ -39,7 +39,7 @@ resource "random_password" "example" {
   override_special = "_%!"
 }
 resource "aws_secretsmanager_secret" "example" {
-  name = "database-secrets-1"
+  name = "database-secrets-2"
 }
 resource "aws_secretsmanager_secret_version" "example" {
   secret_id = aws_secretsmanager_secret.example.id
