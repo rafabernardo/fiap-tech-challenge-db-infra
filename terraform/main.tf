@@ -5,14 +5,14 @@ resource "aws_db_instance" "rds_postgresql" {
   engine                  = "postgres"
   engine_version          = "16.3"
   instance_class          = "db.t3.micro"
-  username                = var.db_username
-  password                = var.db_password
+  username                = jsondecode(aws_secretsmanager_secret_version.example.secret_string)["db-username"]
+  password                = jsondecode(aws_secretsmanager_secret_version.example.secret_string)["db-password"]
   parameter_group_name    = "default.postgres16"
   skip_final_snapshot     = true
   publicly_accessible     = true
   backup_retention_period = 7
   db_name                 = var.db_name
-  vpc_security_group_ids  = [data.aws_security_group.security_group.id]
+
 
 
   tags = {
@@ -30,11 +30,29 @@ resource "aws_db_instance" "rds_postgresql" {
 
 }
 
-resource "aws_db_subnet_group" "rds_subnet_group" {
-  name       = "${var.projectName}-rds-subnet-group"
-  subnet_ids = [for subnet in data.aws_subnet.subnet : subnet.id if subnet.availability_zone != "${var.regionDefault}e"]
 
-  tags = {
-    Name = "${var.projectName}-rds-subnet-group"
-  }
+
+resource "random_password" "example" {
+  length           = 16
+  special          = true
+  override_special = "_%!"
 }
+resource "aws_secretsmanager_secret" "example" {
+  name = "database-secrets-1"
+}
+resource "aws_secretsmanager_secret_version" "example" {
+  secret_id = aws_secretsmanager_secret.example.id
+  secret_string = jsonencode({
+    db-username = var.db_username
+    db-password = random_password.example.result
+  })
+}
+
+output "db-name" {
+  value = aws_db_instance.rds_postgresql.db_name
+}
+
+output "url" {
+  value = aws_db_instance.rds_postgresql.endpoint
+}
+
