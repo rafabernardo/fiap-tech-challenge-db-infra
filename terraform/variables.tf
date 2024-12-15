@@ -14,3 +14,8 @@ variable "db_name" {
   default     = "fiap_tech_challenge"
 }
 
+variable "security_group_id" {
+  description = "ID of the security group"
+  type        = string
+
+}
